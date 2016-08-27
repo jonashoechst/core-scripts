@@ -5,7 +5,7 @@ from threading import Timer
 import datetime, time, shutil, os
 
 myservices_path = "/home/hoechst/.core/myservices"
-experiment_time_s = 5
+experiment_time_s = 60
 node_cnt = 10
 
 start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M')
@@ -28,16 +28,21 @@ def createCoreNode(i):
     node.newnetif(hub, ["10.0.0.{}/24".format(i)])
     session.services.addservicestonode(node, "", services, verbose=False)
     return node
-    
+
 print("### Creating {} nodes, with services: {}".format(node_cnt, services))
 for i in range(node_cnt):
     nodes.append(createCoreNode(i+1))
 
 def endExperiment():
-    print("\n### Ending Experiment; saving logfiles..."), 
+    print("\n### Ending Experiment; saving logfiles..."),
     os.mkdir(logfolder)
+    os.mkdir("{}/netmon".format(logfolder))
+    os.mkdir("{}/mesher".format(logfolder))
     for f in os.listdir(session.sessiondir):
-        if f.endswith(".log"): shutil.move("{}/{}".format(session.sessiondir, f), logfolder)   
+        if f.endswith(".log"):
+            if f.startswith("netmon"): shutil.move("{}/{}".format(session.sessiondir, f), "{}/netmon".format(logfolder))
+            elif f.startswith("mesher"): shutil.move("{}/{}".format(session.sessiondir, f), "{}/mesher".format(logfolder))
+            else: shutil.move("{}/{}".format(session.sessiondir, f), logfolder)
     print("done.")
     session.shutdown()
 
@@ -50,4 +55,3 @@ print("### Starting node services..."),
 for n in nodes: service.CoreServices(session).bootnodeservices(n)
 print("done.")
 print("### Experiment is now running.")
-
