@@ -31,6 +31,9 @@ def runMesherExperiment(duration, node_cnt, logfolder):
                 if f.startswith("netmon"): shutil.move("{}/{}".format(session.sessiondir, f), "{}/netmon".format(logfolder))
                 elif f.startswith("mesher"): shutil.move("{}/{}".format(session.sessiondir, f), "{}/mesher".format(logfolder))
                 else: shutil.move("{}/{}".format(session.sessiondir, f), logfolder)
+        with open("{}configuration.csv".format(logfolder), "w+") as config:
+            config.write("duration: {}\n".format(duration))
+            config.write("node_cnt, {}\n".format(node_cnt))
         print("done.\n")
         session.shutdown()
 
