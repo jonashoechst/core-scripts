@@ -2,11 +2,11 @@
 from core import pycore
 from core import service
 from threading import Timer
-import datetime, time, shutil, os
+import datetime, time, shutil, os, sys
 
 myservices_path = "/home/hoechst/.core/myservices"
 experiment_time_s = 60
-node_cnt = 10
+node_cnt = int(sys.argv[1])
 
 start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M')
 logfolder = "/tmp/mesher-monitor-{}/".format(start_time)
