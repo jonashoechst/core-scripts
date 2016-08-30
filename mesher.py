@@ -33,7 +33,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
         return node
 
     def endExperiment():
-        print("\n### Ending experiment, saving logfiles..."),
+        print("### Ending experiment, saving logfiles..."),
         netmon.stop()
         # os.mkdir("{}/netmon".format(logfolder))
         os.mkdir("{}/mesher".format(logfolder))
@@ -92,6 +92,9 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
     endExperiment()
 
 if __name__ == "__main__":
+    # logfolder = createLogfolder()
+    # runMesherExperiment(10, 3, logfolder, scheduler=None)
+    # sys.exit(1)
     node_counts = [10] #[5, 10, 25, 50, 100]
     durations = [10]
     schedulers = []
