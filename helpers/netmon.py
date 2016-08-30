@@ -71,11 +71,11 @@ class LoggerThread(Thread):
         except IOError:
             sys.exit("Unable to write to file {}; using stdout".format(outpath))
             self.outfile = None
-    
+
     def write(self, msg):
         if self.outfile: self.outfile.write(msg)
-        else: print(msg, end="") 
-    
+        else: print(msg, end="")
+
     def run(self):
         self.write(get_header())
         self.running = True
@@ -84,7 +84,7 @@ class LoggerThread(Thread):
             self.write(stats)
             sys.stdout.flush()
             time.sleep(1)
-        
+
     def stop(self): self.running = False
 
 
@@ -95,22 +95,22 @@ class PcapThread(Thread):
         self.pc = pcap.pcap(name=interface)
         self.last_time = time.time()
         self.port = port
-        
+
     def run(self):
         self.running = True
-        while self.running: 
+        while self.running:
             self.count_pkts()
 
     def stop(self): self.running = False
-    
+
     def count_pkts(self):
         for timestamp, raw_buf in self.pc:
             if not self.running: return
-            
+
             try: self.count_pkt(raw_buf)
-            except Exception as e: 
+            except Exception as e:
                 print(e, file=sys.stderr)
-            
+
     def count_pkt(self, raw_buf):
         if not self.running: return
         output = {}
@@ -118,7 +118,7 @@ class PcapThread(Thread):
         # Unpack the Ethernet frame (mac src/dst, ethertype)
         eth = dpkt.ethernet.Ethernet(raw_buf)
         packet_size = len(raw_buf)
-        
+
         global cur_cnt, total_cnt, cur_size, total_size
         cur_cnt["pkt"] += 1
         total_cnt["pkt"] += 1
@@ -127,7 +127,7 @@ class PcapThread(Thread):
         total_size["pkt"] += packet_size
 
         if eth.type != dpkt.ethernet.ETH_TYPE_IP: return
-        
+
         ip = eth.data
 
         cur_cnt["ip"] += 1
@@ -163,9 +163,9 @@ class PcapThread(Thread):
 
 def start(interface, port=None, outpath=None):
     """Start a netmon for the given interface name
-    
+
     port: count spare traffic for this port
-    outpath: save netmon log to this port, instead of printing 
+    outpath: save netmon log to this port, instead of printing
     """
     global pcapThread, loggerThread
     pcapThread = PcapThread(interface, port=port)
@@ -179,19 +179,19 @@ def stop():
     global pcapThread, loggerThread
     pcapThread.stop()
     loggerThread.stop()
-    pcapThread.join()
-    loggerThread.join()
+    pcapThread.join(1)
+    loggerThread.join(1)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2: 
+    if len(sys.argv) != 2:
         print("usage: {} <interface>".format(sys.argv[0]))
         sys.exit(1)
     start(sys.argv[1])
-    
+
     def signal_handler(signal, frame):
         stop()
         sys.exit(0)
     signal.signal(signal.SIGINT, signal_handler)
-    
+
     while True: time.sleep(60)

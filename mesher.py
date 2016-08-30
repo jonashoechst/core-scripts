@@ -14,12 +14,12 @@ def createLogfolder(description=None):
     logfolder = "/tmp/mesher-monitor/"
     if description: logfolder += "{}-".format(description)
     logfolder += start_time
-    
+
     if os.path.isdir(logfolder):
         char = 97
         while os.path.isdir("{}-{}".format(logfolder, chr(char))): char += 1
         logfolder = "{}-{}".format(logfolder, chr(char))
-        
+
     os.makedirs(logfolder)
     return logfolder
 
@@ -33,9 +33,12 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
         return node
 
     def endExperiment():
-        print("### Ending experiment, saving logfiles..."),
+        print("### Ending experiment...")
+        print("    stopping netmon")
         netmon.stop()
         # os.mkdir("{}/netmon".format(logfolder))
+
+        print("    copying files")
         os.mkdir("{}/mesher".format(logfolder))
         for f in os.listdir(session.sessiondir):
             if f.endswith(".log"):
@@ -47,11 +50,13 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
             config.write("node_cnt, {}\n".format(node_cnt))
             try:
                 config.write("scheduler, {}\n".format(scheduler.split("/")[-1]))
-            except Exception as e: 
+            except Exception as e:
                 config.write("scheduler, {}\n".format(scheduler))
-        print("done.\n")
+
+        print("    shutting down session")
         session.shutdown()
-    
+        print("    done.\n")
+
     def copy_scheduler(scheduler):
         if not scheduler:
             print("No scheduler set, removing {}".format(scheduler_targer))
@@ -67,7 +72,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
 
     print("### Creating CORE session.")
     session = pycore.Session(persistent=True)
-    
+
     def signal_handler(signal, frame):
         endExperiment()
         sys.exit(0)
@@ -78,7 +83,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
 
     print("### Creating central network hub.")
     hub = session.addobj(cls=pycore.nodes.HubNode, name="hub")
-    
+
 
     print("### Creating {} nodes with services: {}".format(node_cnt, services))
     nodes = []
@@ -91,25 +96,28 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
     for n in nodes: service.CoreServices(session).bootnodeservices(n)
 
     print("### Experiment is now running for {} seconds.\n".format(duration))
-    time.sleep(duration)
+    for i in range(duration):
+        time.sleep(1)
+        sys.stdout.write(".")
+    print(" time's up!")
     endExperiment()
 
 if __name__ == "__main__":
     # logfolder = createLogfolder()
     # runMesherExperiment(10, 3, logfolder, scheduler=None)
     # sys.exit(1)
-    node_counts = [10] #[5, 10, 25, 50, 100]
-    durations = [10]
+    node_counts = [100] #[10, 25, 50, 100]
+    durations = [100]
     schedulers = []
-    
+
     if len(sys.argv) != 2:
         print("usage: {} [scheduler|scheduler-dir]".format(sys.argv[0]))
         sys.exit(1)
-        
+
     if os.path.isdir(sys.argv[1]):
         for (_, _, filenames) in os.walk(sys.argv[1]):
             for filename in filenames:
-                if filename.endswith('.js'): 
+                if filename.endswith('.js'):
                     schedulers.append(os.sep.join([sys.argv[1], filename]))
     elif os.path.isfile(sys.argv[1]) and sys.argv[1].endswith('.js'):
         schedulers.append(sys.argv[1])
@@ -117,7 +125,7 @@ if __name__ == "__main__":
         print("No scheduler found at given path.\n")
         print("usage: {} [scheduler|scheduler-dir]".format(sys.argv[0]))
         sys.exit(2)
-    
+
     for d in durations:
         for n in node_counts:
             for s in schedulers:
@@ -125,7 +133,3 @@ if __name__ == "__main__":
                 description = "{}-n{}".format(sname, n)
                 logfolder = createLogfolder(description)
                 runMesherExperiment(d, n, logfolder, scheduler=s)
-
-
-
-
