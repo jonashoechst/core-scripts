@@ -106,7 +106,7 @@ if __name__ == "__main__":
                 if filename.endswith('.js'): 
                     schedulers.append(os.sep.join([sys.argv[1], filename]))
     elif os.path.isfile(sys.argv[1]) and sys.argv[1].endswith('.js'):
-        schedulers.append(filename)
+        schedulers.append(sys.argv[1])
     else:
         print("No scheduler found at given path.\n")
         print("usage: {} [scheduler|scheduler-dir]".format(sys.argv[0]))
