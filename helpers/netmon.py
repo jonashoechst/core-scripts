@@ -154,7 +154,7 @@ class PcapThread(Thread):
            total_cnt["udp"] += 1
            cur_size["udp"] += packet_size
            total_size["udp"] += packet_size
-           if self.port != None and (UDP.dport == 4110 or UDP.sport == 4110):
+           if self.port != None and (UDP.dport == self.port or UDP.sport == self.port):
                cur_cnt["udp_port"] += 1
                total_cnt["udp_port"] += 1
                cur_size["udp_port"] += packet_size
@@ -168,7 +168,7 @@ def start(interface, port=None, outpath=None):
     outpath: save netmon log to this port, instead of printing 
     """
     global pcapThread, loggerThread
-    pcapThread = PcapThread(interface)
+    pcapThread = PcapThread(interface, port=port)
     loggerThread = LoggerThread(outpath=outpath)
     pcapThread.start()
     loggerThread.start()
