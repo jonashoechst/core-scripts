@@ -45,7 +45,10 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
         with open("{}/configuration.csv".format(logfolder), "w+") as config:
             config.write("duration, {}\n".format(duration))
             config.write("node_cnt, {}\n".format(node_cnt))
-            config.write("scheduler, {}\n".format(scheduler.split("/")[-1]))
+            try:
+                config.write("scheduler, {}\n".format(scheduler.split("/")[-1]))
+            except Exception as e: 
+                config.write("scheduler, {}\n".format(scheduler))
         print("done.\n")
         session.shutdown()
     
