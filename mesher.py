@@ -76,14 +76,14 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
     print("### Creating central network hub.")
     hub = session.addobj(cls=pycore.nodes.HubNode, name="hub")
     
-    print("### Attaching netmon to network hub.")
-    netmon.start(hub.brname, outpath="{}/netmon-hub.csv".format(logfolder), port=8032)
 
     print("### Creating {} nodes with services: {}".format(node_cnt, services))
     nodes = []
     for i in range(node_cnt):
         nodes.append(createCoreNode(i+1, hub))
 
+    print("### Attaching netmon to network hub.")
+    netmon.start(hub.brname, outpath="{}/netmon-hub.csv".format(logfolder), port=8032)
     print("### Starting node services...")
     for n in nodes: service.CoreServices(session).bootnodeservices(n)
 
