@@ -5,7 +5,7 @@ from threading import Timer
 import datetime, time, shutil, os, sys, signal
 import helpers.netmon as netmon
 
-myservices_path = "/home/hoechst/.core/myservices"
+myservices_path = os.getcwd() + "/coreservices"
 scheduler_targer = "/tmp/scheduler.js"
 services = "DefaultRoute|MesherService"
 
@@ -56,6 +56,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
         print("    shutting down session")
         session.shutdown()
         print("    done.\n")
+        print(" Results in folder: {}\n".format(logfolder))
 
     def copy_scheduler(scheduler):
         if not scheduler:
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     # logfolder = createLogfolder()
     # runMesherExperiment(10, 3, logfolder, scheduler=None)
     # sys.exit(1)
-    node_counts = [100] #[10, 25, 50, 100]
+    node_counts = [10] #[10, 25, 50, 100]
     durations = [100]
     schedulers = []
 
