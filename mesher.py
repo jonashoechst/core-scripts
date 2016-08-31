@@ -129,7 +129,7 @@ if __name__ == "__main__":
     for d in durations:
         for n in node_counts:
             for s in schedulers:
-                sname = s.split("/")[-1]
-                description = "{}-n{}".format(sname, n)
+                sname = s.split("/")[-1].split(".")[0]
+                description = "{}-n{}".format(sname, str(n).zfill(3))
                 logfolder = createLogfolder(description)
                 runMesherExperiment(d, n, logfolder, scheduler=s)
