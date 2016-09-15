@@ -105,8 +105,8 @@ if __name__ == "__main__":
     # logfolder = createLogfolder()
     # runMesherExperiment(10, 3, logfolder, scheduler=None)
     # sys.exit(1)
-    node_counts = [1, 2, 5, 10, 25, 50, 100]
-    durations = [120]
+    node_counts = [2, 5, 10, 25, 50, 100, 200]
+    durations = [300] # 300s aka. 5 min.
     schedulers = []
 
 
