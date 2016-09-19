@@ -27,7 +27,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
     def createCoreNode(node_number, cable):
         if node_number < 1 or node_number > 254:
             raise Exception("0 < node_number < 256, since we use 10.0.0.0/24")
-        node = session.addobj(cls=pycore.nodes.CoreNode, name="n{}".format(i))
+        node = session.addobj(cls=pycore.nodes.CoreNode, name="n{}".format(str(i).zfill(3)))
         node.newnetif(cable, ["10.0.0.{}/24".format(i)])
         session.services.addservicestonode(node, "", services, verbose=False)
         return node
@@ -91,7 +91,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
 
     print("### Attaching netmon to network hub.")
     netmon.start(hub.brname, outpath="{}/netmon-hub.csv".format(logfolder), port=8032)
-    print("### Starting node services (with {}s delay)\n".format(delay))
+    print("### Starting node services (with {}s delay)".format(delay))
     for n in nodes:
         service.CoreServices(session).bootnodeservices(n)
         time.sleep(delay)
@@ -99,7 +99,7 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
 
     remaining_duration = duration - len(nodes)*delay
 
-    print("### Experiment is now running for remaining {} seconds.\n".format(remaining_duration))
+    print("\n### Experiment is now running for remaining {} seconds.\n".format(remaining_duration))
     for i in range(remaining_duration):
         time.sleep(1)
         sys.stdout.write(".")
