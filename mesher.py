@@ -23,7 +23,7 @@ def createLogfolder(description=None):
     os.makedirs(logfolder)
     return logfolder
 
-def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
+def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
     def createCoreNode(node_number, cable):
         if node_number < 1 or node_number > 254:
             raise Exception("0 < node_number < 256, since we use 10.0.0.0/24")
@@ -91,11 +91,16 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None):
 
     print("### Attaching netmon to network hub.")
     netmon.start(hub.brname, outpath="{}/netmon-hub.csv".format(logfolder), port=8032)
-    print("### Starting node services...")
-    for n in nodes: service.CoreServices(session).bootnodeservices(n)
+    print("### Starting node services (with {}s delay)\n".format(delay))
+    for n in nodes:
+        service.CoreServices(session).bootnodeservices(n)
+        time.sleep(delay)
+        sys.stdout.write(".")
 
-    print("### Experiment is now running for {} seconds.\n".format(duration))
-    for i in range(duration):
+    remaining_duration = duration - len(nodes)*delay
+
+    print("### Experiment is now running for remaining {} seconds.\n".format(remaining_duration))
+    for i in range(remaining_duration):
         time.sleep(1)
         sys.stdout.write(".")
     print(" time's up!")
