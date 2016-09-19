@@ -140,3 +140,12 @@ if __name__ == "__main__":
             print("\nRunning experiment {} / {}.".format(num, count))
             runMesherExperiment(d, n, logfolder, scheduler=s)
             num += 1
+
+    n = node_counts[-1]
+    for s in schedulers:
+        sname = s.split("/")[-1].split(".")[0]
+        description = "{}-n{}-d{}".format(sname, str(n).zfill(3), 1)
+        logfolder = createLogfolder(description)
+        print("\nRunning experiment {} / {}.".format(num, count))
+        runMesherExperiment(d, n, logfolder, scheduler=s, delay=1)
+        num += 1
