@@ -107,13 +107,9 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
     endExperiment()
 
 if __name__ == "__main__":
-    # logfolder = createLogfolder()
-    # runMesherExperiment(10, 3, logfolder, scheduler=None)
-    # sys.exit(1)
     node_counts = [2, 5, 10, 25, 50, 100, 200]
-    durations = [300] # 300s aka. 5 min.
+    d = 300 # 300s aka. 5 min.
     schedulers = []
-
 
     if len(sys.argv) != 2:
         print("usage: {} [scheduler|scheduler-dir]".format(sys.argv[0]))
@@ -131,17 +127,16 @@ if __name__ == "__main__":
         print("usage: {} [scheduler|scheduler-dir]".format(sys.argv[0]))
         sys.exit(2)
 
-    count = len(node_counts) * len(durations) * len(schedulers)
-    runlength = float(len(node_counts) * len(schedulers) * sum(durations)) / 60
+    count = len(node_counts) * len(schedulers)
+    runlength = float(len(node_counts) * len(schedulers) * d) / 60
     print("Starting Mesher Experiment session --- {} Experiments ~ {} minutes.".format(count, runlength))
     num = 1
 
-    for d in durations:
-        for n in node_counts:
-            for s in schedulers:
-                sname = s.split("/")[-1].split(".")[0]
-                description = "{}-n{}".format(sname, str(n).zfill(3))
-                logfolder = createLogfolder(description)
-                print("\nRunning experiment {} / {}.".format(num, count))
-                runMesherExperiment(d, n, logfolder, scheduler=s)
-                num += 1
+    for n in node_counts:
+        for s in schedulers:
+            sname = s.split("/")[-1].split(".")[0]
+            description = "{}-n{}".format(sname, str(n).zfill(3))
+            logfolder = createLogfolder(description)
+            print("\nRunning experiment {} / {}.".format(num, count))
+            runMesherExperiment(d, n, logfolder, scheduler=s)
+            num += 1
