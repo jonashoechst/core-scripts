@@ -128,8 +128,8 @@ if __name__ == "__main__":
         sys.exit(2)
 
     count = (len(node_counts) + 1) * len(schedulers)
-    runlength = float(count * d) / 60
-    print("Starting Mesher Experiment session --- {} Experiments ~ {} minutes.".format(count, runlength))
+    runlength = float(count * d) / 60 / 60
+    print("Starting Mesher Experiment session --- {} Experiments ~ {} hours.".format(count, runlength))
     num = 1
 
     for n in node_counts:
