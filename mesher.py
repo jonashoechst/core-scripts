@@ -2,7 +2,7 @@
 from core import pycore
 from core import service
 from threading import Timer
-import datetime, time, shutil, os, sys, signal
+import datetime, time, shutil, os, sys, signal, random
 import helpers.netmon as netmon
 
 myservices_path = os.getcwd() + "/coreservices"
@@ -92,14 +92,14 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
     print("### Attaching netmon to network hub.")
     netmon.start(hub.brname, outpath="{}/netmon-hub.csv".format(logfolder), port=8032)
 
-    if delay == 0: delay = node_cnt / 20    # hard coded observation interval
+    if delay == 0: delay = 20.0 / float(node_cnt)    # hard coded observation interval
     print("### Starting node services (with avg {}s delay)".format(delay))
     for n in nodes:
         service.CoreServices(session).bootnodeservices(n)
         time.sleep(random.uniform(0, 2*delay))
         sys.stdout.write(".")
 
-    remaining_duration = duration - len(nodes)*delay
+    remaining_duration = duration - int(len(nodes) * delay)
 
     print("\n### Experiment is now running for remaining {} seconds.\n".format(remaining_duration))
     for i in range(remaining_duration):
