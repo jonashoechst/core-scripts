@@ -2,7 +2,7 @@
 from core import pycore
 from core import service
 from threading import Timer
-import datetime, time, shutil, os, sys, signal, random
+import datetime, time, shutil, os, sys, signal, random, sched
 import helpers.netmon as netmon
 
 myservices_path = os.getcwd() + "/coreservices"
@@ -97,14 +97,25 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
     netmon.start(hub1.brname, outpath="{}/netmon-hub1.csv".format(logfolder), port=8032)
     netmon.start(hub2.brname, outpath="{}/netmon-hub2.csv".format(logfolder), port=8032)
     
-    if delay == 0: delay = 20.0 / float(node_cnt)    # hard coded observation interval
-    print("### Starting node services (with avg {}s delay)".format(delay))
-    for n in nodes:
-        service.CoreServices(session).bootnodeservices(n)
-        time.sleep(random.uniform(0, 2*delay))
-        sys.stdout.write(".")
-
-    remaining_duration = duration - int(len(nodes) * delay)
+    if delay == 0:
+        print("### Starting node services in 20s window")
+        s = sched.scheduler(time.time, time.sleep)
+        def finished(): print("    Finished starting nodes.")
+        s.enter(20, 1, finished, ())
+        for n in nodes:
+            node_delay = random.uniform(0, 20.0)
+            s.enter(node_delay, 1, service.CoreServices(session).bootnodeservices, (n,))
+        s.run()
+        remaining_duration = duration - 20
+    else:
+        print("### Starting node services (with avg {}s delay)".format(delay))
+        remaining_duration = duration - len(nodes) * delay
+        for n in nodes:
+            preDelay = random.uniform(0, delay)
+            time.sleep(preDelay)
+            service.CoreServices(session).bootnodeservices(n)
+            time.sleep(delay-preDelay)
+            sys.stdout.write(".")
 
     print("\n### Experiment is now running for first {} seconds.\n".format(remaining_duration/2))
     for i in range(remaining_duration/2):
