@@ -33,10 +33,8 @@ class MesherService(CoreService):
     @classmethod
     def generateconfig(cls, node, filename, services):
         if filename == "mesher-start.sh":
-            cfg = '''#!/bin/bash
+            cfg = '''#!/bin/sh
 sleep 1
-STIME=$(( $RANDOM % 20 )).$(( $RANDOM % 1000 ));
-sleep $STIME
 sched=/tmp/scheduler.js
 logfile={}/mesher-{}.log
 if [ -e $sched ]; then
