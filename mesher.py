@@ -91,10 +91,12 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
 
     print("### Attaching netmon to network hub.")
     netmon.start(hub.brname, outpath="{}/netmon-hub.csv".format(logfolder), port=8032)
-    print("### Starting node services (with {}s delay)".format(delay))
+
+    if delay == 0: delay = node_cnt / 20    # hard coded observation interval
+    print("### Starting node services (with avg {}s delay)".format(delay))
     for n in nodes:
         service.CoreServices(session).bootnodeservices(n)
-        time.sleep(delay)
+        time.sleep(random.uniform(0, 2*delay))
         sys.stdout.write(".")
 
     remaining_duration = duration - len(nodes)*delay
