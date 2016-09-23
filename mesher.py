@@ -140,7 +140,7 @@ if __name__ == "__main__":
         print("usage: {} [scheduler|scheduler-dir]".format(sys.argv[0]))
         sys.exit(2)
 
-    count = (len(node_counts) + 1) * len(schedulers)
+    count = (len(node_counts) * 2) * len(schedulers)
     runlength = float(count * d) / 60 / 60
     print("Starting Mesher Experiment session --- {} Experiments ~ {} hours.".format(count, runlength))
     num = 1
