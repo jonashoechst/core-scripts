@@ -120,8 +120,8 @@ def runMesherExperiment(duration, node_cnt, logfolder, scheduler=None, delay=0):
     endExperiment()
 
 if __name__ == "__main__":
-    node_counts = [2, 5, 10, 25, 50, 100, 200]
-    d = 300 # 300s aka. 5 min.
+    node_counts = range(10) + [10, 25, 50, 100, 200]
+    d = 600 # 300s aka. 5 min.
     schedulers = []
 
     if len(sys.argv) != 2:
